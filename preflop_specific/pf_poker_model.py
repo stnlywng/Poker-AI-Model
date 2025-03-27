@@ -37,11 +37,11 @@ class MultiHeadAttention(nn.Module):
         return self.out_proj(out)
 
 class PokerNet(nn.Module):
-    def __init__(self, static_dim=19, action_dim=3, hidden_dim=256, gru_hidden_dim=128):
+    def __init__(self, static_dim=19, action_dim=4, hidden_dim=256, gru_hidden_dim=128):
         """
         Parameters:
         - static_dim: dimension of static features (19 in our case from process_features)
-        - action_dim: dimension of each action (3 in our case: action_type, player, amount)
+        - action_dim: dimension of each action (4 in our case: action_type, player, amount, round)
         - hidden_dim: dimension of hidden layers
         - gru_hidden_dim: dimension of GRU hidden state
         """
@@ -71,7 +71,7 @@ class PokerNet(nn.Module):
         
         # Process action sequence with deeper GRU
         self.gru = nn.GRU(
-            input_size=action_dim,  # (action_type, player, amount)
+            input_size=action_dim,  # (action_type, player, amount, round)
             hidden_size=gru_hidden_dim,
             num_layers=3,  # Increased number of layers
             batch_first=True,

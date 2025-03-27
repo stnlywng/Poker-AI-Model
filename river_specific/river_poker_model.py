@@ -184,4 +184,4 @@ class PokerNet(nn.Module):
         raw_size = self.size_head(features)
         size_pred = 1.0 + raw_size  # Ensure minimum raise of 1BB
         
-        return action_logits, size_pred  
+        return action_logits, size_pred 

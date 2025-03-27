@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 from flop_poker_model import PokerNet
-from flop_specific.flop_process_features import process_features
+from shared.process_features import process_features
 import glob
 
 def pad_sequence(sequence, max_len=30):
@@ -62,7 +62,7 @@ class PokerDataset(Dataset):
     
     def __getitem__(self, idx):
         # Process the row into features
-        static_features, action_sequence = process_features(self.data[idx])
+        static_features, action_sequence = process_features(self.data[idx], 1)
         
         # Get the target (what action was actually taken)
         actual_action = self.data[idx]['label']

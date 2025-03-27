@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from river_poker_model import PokerNet
-from river_process_features import process_features
+from shared.process_features import process_features
 import pandas as pd
 import glob
 
@@ -62,7 +62,7 @@ class PokerDataset(Dataset):
     
     def __getitem__(self, idx):
         # Process the row into features
-        static_features, action_sequence = process_features(self.data[idx])
+        static_features, action_sequence = process_features(self.data[idx], 3)
         
         # Get the target (what action was actually taken)
         actual_action = self.data[idx]['label']
@@ -225,7 +225,7 @@ def train_model(model, train_loader, val_loader=None, epochs=20, lr=0.0005, devi
 
 def main():                                                                                                                                    
     # Load all parquet files from directory                                                                                                   
-    parquet_files = glob.glob("../data/river/*.parquet")                                                                                       
+    parquet_files = glob.glob("../data/river/*.parquet")
     print(f"Found {len(parquet_files)} parquet files")                                                                                        
                                                                                                                                               
     # Load and combine all dataframes                                                                                                         
@@ -269,7 +269,7 @@ def main():
                                                                                                                                               
     # Initialize model with correct dimensions                                                                                                
     model = PokerNet(                                                                                                                         
-        static_dim=29,  # From process_features                                                                                               
+        static_dim=29,  # From process_features
         action_dim=4,   # [action_type, player, amount, round]                                                                                
         hidden_dim=256,  # Increased from 128                                                                                                 
         gru_hidden_dim=128  # Increased from 64                                                                                               
@@ -282,8 +282,8 @@ def main():
     train_model(model, train_loader, val_loader, epochs=5, device=device)
                                                                                                                                               
     # Save model                                                                                                                              
-    torch.save(model.state_dict(), '../models/poker_model_river.pth')                                                                          
-    print("Model saved to poker_model_river.pth")                                                                                              
+    torch.save(model.state_dict(), '../models/poker_model_river.pth')
+    print("Model saved to poker_model_river.pth")
                                                                                                                                               
 if __name__ == "__main__":                                                                                                                    
     main()                                                                                                                                    

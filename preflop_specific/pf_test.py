@@ -1,6 +1,6 @@
 import torch
 from pf_poker_model import PokerNet
-from preflop_specific.pf_process_features import process_features
+from shared.process_features import process_features
 from preflop_specific.pf_testing_samples import *
 
 

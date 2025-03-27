@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 from pf_poker_model import PokerNet
-from preflop_specific.pf_process_features import process_features
+from shared.process_features import process_features
 import glob
 
 def pad_sequence(sequence, max_len=24):
@@ -62,7 +62,7 @@ class PokerDataset(Dataset):
     
     def __getitem__(self, idx):
         # Process the row into features
-        static_features, action_sequence = process_features(self.data[idx])
+        static_features, action_sequence = process_features(self.data[idx], 0)
         
         # Get the target (what action was actually taken)
         actual_action = self.data[idx]['label']
@@ -268,7 +268,7 @@ def main():
     # Initialize model with correct dimensions
     model = PokerNet(
         static_dim=19,  # From process_features
-        action_dim=3,   # [action_type, player, amount]
+        action_dim=4,   # [action_type, player, amount]
         hidden_dim=256,  # Increased from 128
         gru_hidden_dim=128  # Increased from 64
     )
@@ -280,7 +280,7 @@ def main():
     train_model(model, train_loader, val_loader, epochs=4, device=device)
     
     # Save model
-    torch.save(model.state_dict(), '../models/poker_model_pf_multihead.pth')
+    torch.save(model.state_dict(), '../models/poker_model_pf_multihead_2.pth')
     print("Model saved to poker_model_pf_multihead.pth")
 
 if __name__ == "__main__":
