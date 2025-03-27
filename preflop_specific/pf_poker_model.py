@@ -2,6 +2,40 @@ import torch
 import torch.nn as nn
 import torch.nn.utils.rnn as rnn_utils
 
+class MultiHeadAttention(nn.Module):
+    def __init__(self, hidden_dim, num_heads=8):
+        super().__init__()
+        self.num_heads = num_heads
+        self.hidden_dim = hidden_dim
+        self.head_dim = hidden_dim // num_heads
+        
+        # Linear layers for Q, K, V projections
+        self.q_proj = nn.Linear(hidden_dim, hidden_dim)
+        self.k_proj = nn.Linear(hidden_dim, hidden_dim)
+        self.v_proj = nn.Linear(hidden_dim, hidden_dim)
+        
+        # Output projection
+        self.out_proj = nn.Linear(hidden_dim, hidden_dim)
+        
+    def forward(self, x):
+        batch_size, seq_len, _ = x.size()
+        
+        # Project to Q, K, V
+        q = self.q_proj(x).view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+        k = self.k_proj(x).view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+        v = self.v_proj(x).view(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+        
+        # Scaled dot-product attention
+        scores = torch.matmul(q, k.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.head_dim, dtype=torch.float32))
+        attn = torch.softmax(scores, dim=-1)
+        
+        # Apply attention to values
+        out = torch.matmul(attn, v)
+        
+        # Reshape and project output
+        out = out.transpose(1, 2).contiguous().view(batch_size, seq_len, self.hidden_dim)
+        return self.out_proj(out)
+
 class PokerNet(nn.Module):
     def __init__(self, static_dim=19, action_dim=3, hidden_dim=256, gru_hidden_dim=128):
         """
@@ -12,6 +46,10 @@ class PokerNet(nn.Module):
         - gru_hidden_dim: dimension of GRU hidden state
         """
         super().__init__()
+
+        # GRU First: Captures temporal patterns and bidirectional context
+        # Attention After: Selects which historical moments matter most
+        # Final Context: Compact representation of entire sequence
         
         # Process static features with a deeper network
         self.static_net = nn.Sequential(
@@ -41,12 +79,8 @@ class PokerNet(nn.Module):
             bidirectional=True  # Make it bidirectional for better sequence understanding
         )
         
-        # Attention layer for GRU outputs
-        self.attention = nn.Sequential(
-            nn.Linear(gru_hidden_dim * 2, hidden_dim // 2),
-            nn.Tanh(),
-            nn.Linear(hidden_dim // 2, 1)
-        )
+        # Multi-head attention layer for GRU outputs
+        self.multi_head_attention = MultiHeadAttention(gru_hidden_dim * 2)  # *2 for bidirectional
         
         # Combine static and sequential features
         combined_dim = (hidden_dim // 2) + (gru_hidden_dim * 2)  # *2 for bidirectional
@@ -124,10 +158,11 @@ class PokerNet(nn.Module):
             # Unpack the sequence
             output, _ = rnn_utils.pad_packed_sequence(packed_output, batch_first=True)
             
-            # Apply attention to get weighted sum of all hidden states
-            attention_weights = self.attention(output)  # (batch_size, seq_len, 1)
-            attention_weights = torch.softmax(attention_weights, dim=1)  # normalize over sequence length
-            sequence_out = torch.bmm(attention_weights.transpose(1, 2), output).squeeze(1)  # (batch_size, hidden_size*2)
+            # Apply multi-head attention
+            attended_output = self.multi_head_attention(output)
+            
+            # Global average pooling over sequence length
+            sequence_out = torch.mean(attended_output, dim=1)
             
         except Exception as e:
             print(f"Error in processing sequence: {e}")

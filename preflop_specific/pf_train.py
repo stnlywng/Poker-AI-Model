@@ -277,11 +277,11 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
-    train_model(model, train_loader, val_loader, epochs=60, device=device)
+    train_model(model, train_loader, val_loader, epochs=4, device=device)
     
     # Save model
-    torch.save(model.state_dict(), '../models/poker_model_pf4.pth')
-    print("Model saved to poker_model_pf4.pth")
+    torch.save(model.state_dict(), '../models/poker_model_pf_multihead.pth')
+    print("Model saved to poker_model_pf_multihead.pth")
 
 if __name__ == "__main__":
     main() 

@@ -1,7 +1,7 @@
 import torch
 from flop_poker_model import PokerNet
-from preflop_specific.pf_process_features import process_features
-from preflop_specific.pf_testing_samples import *
+from flop_process_features import process_features
+from flop_testing_samples import *
 
 
 def load_model(model_path='../models/poker_model_flop.pth'):
@@ -37,7 +37,7 @@ def get_positions_for_size(num_players):
     else:  # heads up
         return ['sb', 'bb']
 
-def create_sample_gamestate(hole_cards, position, num_players, blinds, stacks, ante, actions):
+def create_sample_gamestate(hole_cards, flop_cards, position, num_players, blinds, stacks, ante, preflop_actions, actions):
     """Create a sample gamestate dictionary matching the format expected by process_features"""
     positions = get_positions_for_size(num_players)
     
@@ -70,12 +70,13 @@ def create_sample_gamestate(hole_cards, position, num_players, blinds, stacks, a
         }
     ])
     
-    # Add user-provided actions
-    auto_actions.extend(actions)
+    # Add preflop actions
+    auto_actions.extend(preflop_actions)
     
     return {
-        'preflop_gamestate': {
+        'flop_gamestate': {
             'hole_cards': hole_cards,
+            'flop_cards': flop_cards,
             'position': position,
             'num_players': num_players,
             'blinds': blinds,
@@ -83,7 +84,8 @@ def create_sample_gamestate(hole_cards, position, num_players, blinds, stacks, a
             'start_round_stacks': [
                 {'player': pos, 'stack': stacks[pos]} for pos in positions
             ],
-            'actions_in_round': auto_actions
+            'actions_in_round': actions,
+            'preflop_actions': auto_actions
         }
     }
 
@@ -115,7 +117,9 @@ def predict_action(model, gamestate, device):
         2: 'raise',
         3: 'call all-in',
         4: 'raise all-in',
-        5: 'check'
+        5: 'check',
+        6: 'bet',
+        7: 'bet all-in'
     }
     
     # Get probabilities for each action
@@ -124,7 +128,7 @@ def predict_action(model, gamestate, device):
     return {
         'predicted_action': action_map[predicted_action],
         'action_probabilities': probs_dict,
-        'raise_size': size_pred.item()# if predicted_action in [2, 4] else None
+        'raise_size': size_pred.item() if predicted_action in [2, 4, 6] else None
     }
 
 def main():
@@ -141,16 +145,18 @@ def main():
         if input("\nReady to enter a hand? (y/q): ").lower() == 'q':
             break
 
-        hole_cards, position, num_players, blinds, ante, stacks, actions = sample_three()
+        hole_cards, flop_cards, position, num_players, blinds, ante, stacks, preflop_actions, actions = sample_three()
         
         # Create gamestate
         gamestate = create_sample_gamestate(
             hole_cards=hole_cards,
+            flop_cards=flop_cards,
             position=position,
             num_players=num_players,
             blinds=blinds,
             ante=ante,
             stacks=stacks,
+            preflop_actions=preflop_actions,
             actions=actions
         )
         

@@ -2,12 +2,12 @@ import torch
 
 def process_static_features(row):
     """
-    Process static features from the preflop gamestate.
+    Process static features from the flop gamestate.
     
     Args:
         row (dict): Dictionary containing flop_gamestate with:
             - hole_cards: List of 2 cards (e.g. ['Ah', 'Kd'])
-            - flop_cards: List of 3 cards (e.g. ['Th', '4d', 'Qd'])
+            - flop_cards: List of 3 cards (e.g. ['2h', '7d', 'Kc'])
             - num_players: Number of players at table
             - position: Player position (sb, bb, utg1, etc.)
             - blinds: Big blind amount
@@ -18,6 +18,7 @@ def process_static_features(row):
     Returns:
         torch.FloatTensor: Tensor of shape (num_static_features,) containing:
             - 4 values for hole cards (2 ranks + 2 suits)
+            - 6 values for flop cards (3 ranks + 3 suits)
             - 1 value for num_players
             - 9 values for position one-hot encoding
             - 4 values for normalized numeric features (pot, stacks)
@@ -35,8 +36,6 @@ def process_static_features(row):
         static_features.append(suit_map[card[1]])
 
     # Flop cards
-    # print("?? ", row)
-
     for card in row['flop_gamestate']['flop_cards']:
         static_features.append(rank_map[card[0]])
         static_features.append(suit_map[card[1]])
@@ -107,10 +106,11 @@ def process_sequence_features(row):
             - blinds: Big blind amount
             
     Returns:
-        torch.FloatTensor: Tensor of shape (seq_len, 3) containing for each action:
-            - action_type: Encoded action (0-6)
+        torch.FloatTensor: Tensor of shape (seq_len, 4) containing for each action:
+            - action_type: Encoded action (0-7)
             - player_position: Encoded position (0-8)
             - normalized_amount: Amount normalized by big blind
+            - round: 0 for preflop, 1 for flop
     """
     # Sequence features (for GRU)
     history_action_map = {
@@ -130,36 +130,38 @@ def process_sequence_features(row):
     
     sequence = []
     blinds = row['flop_gamestate']['blinds']
-
-    for action in row['flop_gamestate']['preflop_actions']:
-        # Normalize amount by big blind
-        amount = (action.get('amount', 0) or 0) / blinds
-        action_type = history_action_map[action['action']]
-        player_pos = player_map[action['player']]
-
-        sequence.append([action_type, player_pos, amount, 0])
     
-    for action in row['flop_gamestate']['actions_in_round']:
-        # Normalize amount by big blind
+    # Add preflop actions with round=0
+    for action in row['flop_gamestate']['preflop_actions']:
         amount = (action.get('amount', 0) or 0) / blinds
         action_type = history_action_map[action['action']]
         player_pos = player_map[action['player']]
+        round_num = 0  # preflop
         
-        sequence.append([action_type, player_pos, amount, 1])
+        sequence.append([action_type, player_pos, amount, round_num])
+    
+    # Add flop actions with round=1
+    for action in row['flop_gamestate']['actions_in_round']:
+        amount = (action.get('amount', 0) or 0) / blinds
+        action_type = history_action_map[action['action']]
+        player_pos = player_map[action['player']]
+        round_num = 1  # flop
+        
+        sequence.append([action_type, player_pos, amount, round_num])
 
     return torch.FloatTensor(sequence)
 
 def process_features(row):
     """
-    Process both static and sequence features from the preflop gamestate.
+    Process both static and sequence features from the flop gamestate.
     
     Args:
-        row (dict): Dictionary containing preflop_gamestate with all required fields
+        row (dict): Dictionary containing flop_gamestate with all required fields
         
     Returns:
         tuple: (static_features, sequence_features)
             - static_features: torch.FloatTensor of shape (num_static_features,)
-            - sequence_features: torch.FloatTensor of shape (seq_len, 3)
+            - sequence_features: torch.FloatTensor of shape (seq_len, 4)
             
     Example input row structure:
     {

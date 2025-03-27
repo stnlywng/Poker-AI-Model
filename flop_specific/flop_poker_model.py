@@ -6,7 +6,7 @@ class PokerNet(nn.Module):
     def __init__(self, static_dim=25, action_dim=4, hidden_dim=256, gru_hidden_dim=128):
         """
         Parameters:
-        - static_dim: dimension of static features (19 in our case from process_features)
+        - static_dim: dimension of static features (25 in our case from process_features)
         - action_dim: dimension of each action (4 in our case: action_type, player, amount, stage)
         - hidden_dim: dimension of hidden layers
         - gru_hidden_dim: dimension of GRU hidden state
