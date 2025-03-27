@@ -1,6 +1,8 @@
 import torch
 from preflop_specific.pf_poker_model import PokerNet as PokerNetPF
-from flop_poker_model import PokerNet
+from flop_specific.flop_poker_model import PokerNet as PokerNetFLOP
+from turn_specific.turn_poker_model import PokerNet as PokerNetTURN
+from river_specific.river_poker_model import PokerNet as PokerNetRIVER
 from shared.process_features import process_features
 import json
 import sys
@@ -25,7 +27,7 @@ def load_model(round):
         return model, device
     elif round == 1:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        model = PokerNet(
+        model = PokerNetFLOP(
             static_dim=25,  # From process_features
             action_dim=4,  # [action_type, player, amount, round]
             hidden_dim=256,  # Increased from 128
@@ -37,7 +39,7 @@ def load_model(round):
         return model, device
     elif round == 2:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        model = PokerNet(
+        model = PokerNetTURN(
             static_dim=27,  # From process_features
             action_dim=4,  # [action_type, player, amount, round]
             hidden_dim=256,  # Increased from 128
@@ -49,7 +51,7 @@ def load_model(round):
         return model, device
     elif round == 3:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        model = PokerNet(
+        model = PokerNetRIVER(
             static_dim=29,  # From process_features
             action_dim=4,  # [action_type, player, amount, round]
             hidden_dim=256,  # Increased from 128
