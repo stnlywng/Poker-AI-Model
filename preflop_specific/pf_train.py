@@ -6,7 +6,7 @@ from pf_poker_model import PokerNet
 from preflop_specific.pf_process_features import process_features
 import glob
 
-def pad_sequence(sequence, max_len=20):
+def pad_sequence(sequence, max_len=24):
     """Pad sequence to max_len with zeros"""
     curr_len = len(sequence)
     if curr_len >= max_len:
@@ -20,7 +20,7 @@ def collate_poker_batch(batch):
     """Custom collate function to handle variable length sequences"""
     # Find max sequence length in this batch
     max_len = max(b['action_sequence'].shape[0] for b in batch)
-    max_len = min(max_len, 20)  # Cap at 20 actions to prevent excessive padding
+    max_len = min(max_len, 24)  # Cap at 24 actions to prevent excessive padding
     
     # Get original lengths and pad sequences
     lengths = torch.tensor([len(b['action_sequence']) for b in batch])
@@ -244,7 +244,7 @@ def main():
     dataset = PokerDataset(data_list)
     
     # Split into train/val
-    train_size = int(0.85 * len(dataset))
+    train_size = int(0.91 * len(dataset))
     val_size = len(dataset) - train_size
     train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
     
@@ -277,11 +277,11 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
-    train_model(model, train_loader, val_loader, epochs=1, device=device)
+    train_model(model, train_loader, val_loader, epochs=60, device=device)
     
     # Save model
-    torch.save(model.state_dict(), '../models/poker_model.pth')
-    print("Model saved to poker_model.pth")
+    torch.save(model.state_dict(), '../models/poker_model_pf4.pth')
+    print("Model saved to poker_model_pf4.pth")
 
 if __name__ == "__main__":
     main() 

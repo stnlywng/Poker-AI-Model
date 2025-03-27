@@ -1,9 +1,32 @@
-def sample_one():
-    hole_cards = ['Jh', 'Qs']
+def sample_zero():
+    hole_cards = ['Qh', 'Ts']
     position = 'lj'
     num_players = 7
-    blinds = 300
-    ante = 765
+    blinds = 50
+    ante = 60
+
+    stacks = {
+        'sb': 1577,
+        'bb': 1980,
+        'utg1': 400,
+        'lj': 1200,
+        'hj': 1430,
+        'co': 1150,
+        'btn': 1304
+    }
+
+    actions = [
+        {'action': 'folds', 'amount': 0, 'player': 'utg1'},
+    ]
+
+    return hole_cards, position, num_players, blinds, ante, stacks, actions
+
+def sample_one():
+    hole_cards = ['Qh', 'Ts']
+    position = 'lj'
+    num_players = 7
+    blinds = 50
+    ante = 60
 
     stacks = {
         'sb': 1577,
@@ -22,7 +45,7 @@ def sample_one():
     return hole_cards, position, num_players, blinds, ante, stacks, actions
 
 def sample_two():
-    hole_cards = ['Kd', 'Qd']
+    hole_cards = ['Ad', 'Ac']
     position = 'bb'
     num_players = 8
     blinds = 800
@@ -45,8 +68,8 @@ def sample_two():
         {'action': 'calls', 'amount': 800, 'player': 'lj'},
         {'action': 'calls', 'amount': 800, 'player': 'hj'},
         {'action': 'calls', 'amount': 800, 'player': 'co'},
-        {'action': 'raises all-in', 'amount': 39000, 'player': 'btn'},
-        {'action': 'calls all-in', 'amount': 19530, 'player': 'sb'},
+        {'action': 'raises', 'amount': 1700, 'player': 'btn'},
+        {'action': 'raises', 'amount': 4800, 'player': 'sb'},
     ]
 
     return hole_cards, position, num_players, blinds, ante, stacks, actions

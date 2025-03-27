@@ -4,7 +4,7 @@ from preflop_specific.pf_process_features import process_features
 from preflop_specific.pf_testing_samples import *
 
 
-def load_model(model_path='../models/poker_model.pth'):
+def load_model(model_path='../models/poker_model_pf3.pth'):
     """Load the trained model"""
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = PokerNet(
@@ -124,7 +124,7 @@ def predict_action(model, gamestate, device):
     return {
         'predicted_action': action_map[predicted_action],
         'action_probabilities': probs_dict,
-        'raise_size': size_pred.item() if predicted_action in [2, 4] else None
+        'raise_size': size_pred.item()# if predicted_action in [2, 4] else None
     }
 
 def main():
@@ -141,7 +141,7 @@ def main():
         if input("\nReady to enter a hand? (y/q): ").lower() == 'q':
             break
 
-        hole_cards, position, num_players, blinds, ante, stacks, actions = sample_one()
+        hole_cards, position, num_players, blinds, ante, stacks, actions = sample_three()
         
         # Create gamestate
         gamestate = create_sample_gamestate(
