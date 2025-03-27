@@ -1,0 +1,130 @@
+{
+  "river_gamestate": {
+    "round": "r",
+    "hole_cards": [
+      "Kh",
+      "Jh"
+    ],
+    "flop_cards": [
+      "5s",
+      "Qc",
+      "Ks"
+    ],
+    "turn_card": "9c",
+    "river_card": "Qd",
+    "num_players": 6,
+    "position": "utg1",
+    "blinds": 100,
+    "start_round_pot": 5950,
+    "start_round_stacks": [
+      {
+        "player": "sb",
+        "stack": 13324
+      },
+      {
+        "player": "bb",
+        "stack": 21011
+      },
+      {
+        "player": "utg1",
+        "stack": 10437
+      },
+      {
+        "player": "hj",
+        "stack": 7848
+      },
+      {
+        "player": "co",
+        "stack": 7463
+      },
+      {
+        "player": "btn",
+        "stack": 8718
+      }
+    ],
+    "actions_in_round": [
+      {
+        "player": "utg1",
+        "action": "checks"
+      },
+      {
+        "player": "hj",
+        "action": "bets all-in",
+        "amount": 7848
+      }
+    ],
+    "preflop_actions": [
+      {
+        "player": "sb",
+        "action": "posts",
+        "amount": 50
+      },
+      {
+        "player": "bb",
+        "action": "posts",
+        "amount": 100
+      },
+      {
+        "player": "utg1",
+        "action": "raises",
+        "amount": 200
+      },
+      {
+        "player": "hj",
+        "action": "raises",
+        "amount": 660
+      },
+      {
+        "player": "co",
+        "action": "folds"
+      },
+      {
+        "player": "btn",
+        "action": "folds"
+      },
+      {
+        "player": "sb",
+        "action": "folds"
+      },
+      {
+        "player": "bb",
+        "action": "folds"
+      },
+      {
+        "player": "utg1",
+        "action": "raises",
+        "amount": 1900
+      },
+      {
+        "player": "hj",
+        "action": "calls",
+        "amount": 1240
+      }
+    ],
+    "flop_actions": [
+      {
+        "player": "utg1",
+        "action": "bets",
+        "amount": 900
+      },
+      {
+        "player": "hj",
+        "action": "calls",
+        "amount": 900
+      }
+    ],
+    "turn_actions": [
+      {
+        "player": "utg1",
+        "action": "checks"
+      },
+      {
+        "player": "hj",
+        "action": "checks"
+      }
+    ]
+  },
+  "label": {
+    "action": "folds"
+  }
+}

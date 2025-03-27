@@ -1,0 +1,91 @@
+{
+  "flop_gamestate": {
+    "round": "f",
+    "hole_cards": [
+      "7h",
+      "Ac"
+    ],
+    "flop_cards": [
+      "4h",
+      "9d",
+      "6h"
+    ],
+    "num_players": 6,
+    "position": "btn",
+    "blinds": 50,
+    "start_round_pot": 275,
+    "start_round_stacks": [
+      {
+        "player": "sb",
+        "stack": 5848
+      },
+      {
+        "player": "bb",
+        "stack": 1751
+      },
+      {
+        "player": "utg1",
+        "stack": 5204
+      },
+      {
+        "player": "hj",
+        "stack": 10271
+      },
+      {
+        "player": "co",
+        "stack": 5983
+      },
+      {
+        "player": "btn",
+        "stack": 6134
+      }
+    ],
+    "actions_in_round": [
+      {
+        "player": "bb",
+        "action": "checks"
+      }
+    ],
+    "preflop_actions": [
+      {
+        "player": "sb",
+        "action": "posts",
+        "amount": 25
+      },
+      {
+        "player": "bb",
+        "action": "posts",
+        "amount": 50
+      },
+      {
+        "player": "utg1",
+        "action": "folds"
+      },
+      {
+        "player": "hj",
+        "action": "folds"
+      },
+      {
+        "player": "co",
+        "action": "folds"
+      },
+      {
+        "player": "btn",
+        "action": "raises",
+        "amount": 125
+      },
+      {
+        "player": "sb",
+        "action": "folds"
+      },
+      {
+        "player": "bb",
+        "action": "calls",
+        "amount": 75
+      }
+    ]
+  },
+  "label": {
+    "action": "checks"
+  }
+}

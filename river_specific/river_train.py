@@ -279,7 +279,7 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')                                                                     
     print(f"Using device: {device}")                                                                                                          
                                                                                                                                               
-    train_model(model, train_loader, val_loader, epochs=5, device=device)
+    train_model(model, train_loader, val_loader, epochs=1, device=device)
                                                                                                                                               
     # Save model                                                                                                                              
     torch.save(model.state_dict(), '../models/poker_model_river.pth')

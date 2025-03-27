@@ -280,8 +280,8 @@ def main():
     train_model(model, train_loader, val_loader, epochs=4, device=device)
     
     # Save model
-    torch.save(model.state_dict(), '../models/poker_model_pf_multihead_2.pth')
-    print("Model saved to poker_model_pf_multihead.pth")
+    torch.save(model.state_dict(), '../models/poker_model_pf.pth')
+    print("Model saved to poker_model_pf.pth")
 
 if __name__ == "__main__":
     main() 

@@ -1,0 +1,101 @@
+{
+  "turn_gamestate": {
+    "round": "t",
+    "hole_cards": [
+      "Kh",
+      "Qc"
+    ],
+    "flop_cards": [
+      "8c",
+      "8h",
+      "Td"
+    ],
+    "turn_card": "Jd",
+    "num_players": 5,
+    "position": "hj",
+    "blinds": 100,
+    "start_round_pot": 810,
+    "start_round_stacks": [
+      {
+        "player": "bb",
+        "stack": 12924
+      },
+      {
+        "player": "hj",
+        "stack": 9987
+      },
+      {
+        "player": "co",
+        "stack": 13952
+      },
+      {
+        "player": "btn",
+        "stack": 7313
+      },
+      {
+        "player": "sb",
+        "stack": 8188
+      }
+    ],
+    "actions_in_round": [
+      {
+        "player": "sb",
+        "action": "checks"
+      }
+    ],
+    "preflop_actions": [
+      {
+        "player": "btn",
+        "action": "posts",
+        "amount": 50
+      },
+      {
+        "player": "sb",
+        "action": "posts",
+        "amount": 100
+      },
+      {
+        "player": "bb",
+        "action": "folds"
+      },
+      {
+        "player": "hj",
+        "action": "raises",
+        "amount": 200
+      },
+      {
+        "player": "co",
+        "action": "folds"
+      },
+      {
+        "player": "btn",
+        "action": "folds"
+      },
+      {
+        "player": "sb",
+        "action": "calls",
+        "amount": 100
+      }
+    ],
+    "flop_actions": [
+      {
+        "player": "sb",
+        "action": "checks"
+      },
+      {
+        "player": "hj",
+        "action": "bets",
+        "amount": 180
+      },
+      {
+        "player": "sb",
+        "action": "calls",
+        "amount": 180
+      }
+    ]
+  },
+  "label": {
+    "action": "bets",
+    "size": 810
+  }
+}

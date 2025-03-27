@@ -1,0 +1,72 @@
+{
+  "preflop_gamestate": {
+    "round": "pf",
+    "hole_cards": [
+      "Ad",
+      "Td"
+    ],
+    "num_players": 6,
+    "position": "sb",
+    "blinds": 100,
+    "start_round_pot": 150,
+    "start_round_stacks": [
+      {
+        "player": "hj",
+        "stack": 17872
+      },
+      {
+        "player": "co",
+        "stack": 26018
+      },
+      {
+        "player": "btn",
+        "stack": 10000
+      },
+      {
+        "player": "sb",
+        "stack": 11858
+      },
+      {
+        "player": "bb",
+        "stack": 11382
+      },
+      {
+        "player": "utg1",
+        "stack": 10000
+      }
+    ],
+    "actions_in_round": [
+      {
+        "player": "sb",
+        "action": "posts",
+        "amount": 50
+      },
+      {
+        "player": "bb",
+        "action": "posts",
+        "amount": 100
+      },
+      {
+        "player": "utg1",
+        "action": "folds"
+      },
+      {
+        "player": "hj",
+        "action": "folds"
+      },
+      {
+        "player": "co",
+        "action": "folds"
+      },
+      {
+        "player": "btn",
+        "action": "raises",
+        "amount": 220
+      }
+    ]
+  },
+  "label": {
+    "action": "raises",
+    "size": 1100
+  }
+}
