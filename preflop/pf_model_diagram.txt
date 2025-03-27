@@ -1,0 +1,70 @@
+INPUT FEATURES
+│
+├─── Static Features [19 dims] ───────────────────┐
+│    │                                            │
+│    ├── Cards [4 dims]                           │
+│    │   (rank1, suit1, rank2, suit2)             │
+│    │                                            │
+│    ├── Num Players [1 dim]                      │
+│    │                                            │
+│    ├── Position One-Hot [9 dims]                │
+│    │   (sb,bb,utg,utg1,utg2,lj,hj,co,btn)       │
+│    │                                            │
+│    ├── Pot/Blinds Ratio [1 dim]                 │
+│    │                                            │
+│    ├── Stack Features [4 dims]                  │
+│    │   (my_stack, avg_stack,                    │
+│    │    last_act_stack, current_pot)            │
+│    │                                            │
+│    └─→ Static Network                           │
+│        [Linear(19→256) → ReLU → BatchNorm       │
+│         → Dropout(0.2)                          │
+│         → Linear(256→256) → ReLU → BatchNorm    │
+│         → Dropout(0.2)                          │
+│         → Linear(256→128) → ReLU → BatchNorm    │
+│         → Dropout(0.2)]                         │
+│                                                 │
+└─── Action Sequence [Nx3 dims] ─────────────┐    │
+     │                                       │    │
+     └─→ Bidirectional GRU                   │    │
+         [Input(3) → Hidden(128)             │    │
+          3 layers, dropout 0.2]             │    │
+         │                                   │    │
+         └─→ Attention Mechanism             │    │
+             [Linear(256→128) → Tanh         │    │
+              → Linear(128→1)]               │    │
+             │                               │    │
+             └─→ Weighted Sum                │    │
+                 [256 dims]                  │    │
+                      │                      │    │
+                      └──────────────────────┘    │
+                                │                 │
+                                └─────────────────┘
+                                      │
+                            Combined Features [384]
+                                      │
+                            Decision Network
+                            [Linear(384→256) → ReLU → BatchNorm
+                             → Dropout(0.2)
+                             → Linear(256→256) → ReLU → BatchNorm
+                             → Dropout(0.2)
+                             → Linear(256→128) → ReLU → BatchNorm
+                             → Dropout(0.2)]
+                                      │
+                                      ├────────────────┐
+                                      │                │
+                               Action Head        Size Head
+                               │                      │
+                    [Linear(128→64)          [Linear(128→64)
+                     → ReLU → BatchNorm       → ReLU → BatchNorm
+                     → Dropout(0.1)           → Dropout(0.1)
+                     → Linear(64→6)]          → Linear(64→32)
+                            │                 → ReLU → BatchNorm
+                            │                 → Linear(32→1)
+                            │                 → Softplus]
+                            │                      │
+                     Action Logits           Raise Size
+                     (fold,call,raise,       (in BB)
+                      call-allin,
+                      raise-allin,
+                      check)

@@ -1,13 +1,13 @@
 import torch
-from preflop_specific.pf_poker_model import PokerNet as PokerNetPF
-from flop_specific.flop_poker_model import PokerNet as PokerNetFLOP
-from turn_specific.turn_poker_model import PokerNet as PokerNetTURN
-from river_specific.river_poker_model import PokerNet as PokerNetRIVER
+from preflop.pf_poker_model import PokerNet as PokerNetPF
+from flop.flop_poker_model import PokerNet as PokerNetFLOP
+from turn.turn_poker_model import PokerNet as PokerNetTURN
+from river.river_poker_model import PokerNet as PokerNetRIVER
 from shared.process_features import process_features
 import json
 import sys
 
-PREFLOP_MODEL = '../models/poker_model_pf_multihead.pth'
+PREFLOP_MODEL = '../models/poker_model_pf.pth'
 FLOP_MODEL = '../models/poker_model_flop.pth'
 TURN_MODEL = '../models/poker_model_turn.pth'
 RIVER_MODEL = '../models/poker_model_river.pth'
@@ -126,7 +126,7 @@ def predict_action(model, gamestate, round, device):
     }
 
 def main():
-    json_path = '../json-samples/river.json'
+    json_path = '../json-samples/preflop.json'
     
     # Read JSON file
     try:
