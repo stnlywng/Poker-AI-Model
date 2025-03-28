@@ -1,6 +1,10 @@
-# Poker AI Model
+# Poker (No-Limit Holdem) AI Model
 
-A sophisticated deep learning model for poker decision-making, implementing a neural network architecture that handles different stages of the game (preflop, flop, turn, and river). The model uses advanced techniques including multi-head attention and bidirectional GRU to make poker decisions based on both static game state and action sequences.
+Poker No-Limit Holdem Model that learns how to play _exactly like you!_ Simply process and pipeline your hand history with my [PokerCraft Machine Learning Data Pre-Processor](https://github.com/stnlywng/Poker-ML-Data-Preprocessor). And then link your processed data file directories with our training modules.
+
+## Personal Sample Usage.
+
+I've trained data with poker professional/friend [KevinIsLaPoker](https://www.youtube.com/@%E5%87%AF%E6%96%87%E7%9A%84%E6%89%91%E5%85%8B%E4%B9%8B%E8%B7%AF) hand history (retrieved from PokerCraft), and acquired a model with 88% Validation Accuracy from his 170000+ data entries. I have then been able to give the model different scenarios using my test_models module, and retrieve impressive results.
 
 ## Architecture Overview
 
@@ -31,98 +35,4 @@ The project implements a neural network architecture with several key components
   - Processes dynamic action sequences (4-dimensional per action)
 - **Training Models**: Separate trained models for each game stage stored in `models/` directory
 
-## Project Structure
 
-poker-ai-model/
-├── models/ # Trained model files
-│ ├── poker_model_pf.pth
-│ ├── poker_model_flop.pth
-│ ├── poker_model_turn.pth
-│ └── poker_model_river.pth
-├── preflop/ # Preflop stage implementation
-├── flop/ # Flop stage implementation
-├── turn/ # Turn stage implementation
-├── river/ # River stage implementation
-├── shared/ # Shared utilities and functions
-└── data/ # Training data and resources
-
-## Technical Details
-
-### Model Architecture
-
-- **Input Processing**:
-
-  - Static features: 19-dimensional input
-  - Action sequences: 4-dimensional vectors (action_type, player, amount, round)
-  - Sequence processing with variable length support
-
-- **Network Components**:
-  - Multi-head attention (8 heads)
-  - 3-layer bidirectional GRU
-  - Multiple batch normalization and dropout layers
-  - Residual connections for better gradient flow
-
-### Output Format
-
-- Action probabilities for 6 possible actions
-- Continuous bet/raise sizing predictions (minimum 2BB)
-
-## Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/poker-ai-model.git
-cd poker-ai-model
-```
-
-2. Create and activate a virtual environment:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
-
-3. Install dependencies:
-
-```bash
-pip install torch numpy
-```
-
-## Usage
-
-The model can be used for different stages of poker play:
-
-```python
-from preflop.pf_poker_model import PokerNet
-
-# Initialize the model
-model = PokerNet()
-
-# Load trained weights
-model.load_state_dict(torch.load('models/poker_model_pf.pth'))
-
-# Make predictions
-action_logits, size_pred = model(static_features, action_sequence, sequence_lengths)
-```
-
-## Training
-
-Each stage has its own training script (e.g., `pf_train.py` for preflop) that handles:
-
-- Data loading and preprocessing
-- Model training with appropriate hyperparameters
-- Model evaluation and saving
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Acknowledgments
-
-- Thanks to the PyTorch team for the excellent deep learning framework
-- Special thanks to the poker community for valuable insights into game theory
