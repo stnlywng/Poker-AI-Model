@@ -1,3 +1,6 @@
+import argparse
+import os
+
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
@@ -223,14 +226,30 @@ def train_model(model, train_loader, val_loader=None, epochs=20, lr=0.0005, devi
         model.load_state_dict(best_model_state)
         print(f'Restored best model with validation accuracy: {best_val_accuracy:.2f}%')
 
-def main():                                                                                                                                    
-    # Load all parquet files from directory                                                                                                   
-    parquet_files = glob.glob("../data/river/*.parquet")
-    print(f"Found {len(parquet_files)} parquet files")                                                                                        
-                                                                                                                                              
-    # Load and combine all dataframes                                                                                                         
+def main():
+    # Add argument parser
+    parser = argparse.ArgumentParser(description='Train the river poker model')
+    parser.add_argument('--data_path', type=str, required=True,
+                        help='Path to the directory containing training data')
+    parser.add_argument('--epochs', type=int, default=20,
+                        help='Number of training epochs')
+    parser.add_argument('--model_save_path', type=str, required=True,
+                        help='Path where to save the trained model')
+    parser.add_argument('--batch_size', type=int, default=32,
+                        help='Batch size for training')
+
+    args = parser.parse_args()
+
+    # Load all parquet files from directory
+    data_files = glob.glob(os.path.join(args.data_path, '*.parquet'))
+    if not data_files:
+        raise ValueError(f"No parquet files found in {args.data_path}")
+    else:
+        print(f"Found {len(data_files)} parquet files")
+
+        # Load and combine all dataframes
     dfs = []                                                                                                                                  
-    for file in parquet_files:                                                                                                                
+    for file in data_files:
         print(f"Loading {file}...")                                                                                                           
         df = pd.read_parquet(file)                                                                                                            
         dfs.append(df)                                                                                                                        
@@ -279,11 +298,11 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')                                                                     
     print(f"Using device: {device}")                                                                                                          
                                                                                                                                               
-    train_model(model, train_loader, val_loader, epochs=1, device=device)
+    train_model(model, train_loader, val_loader, epochs=args.epochs, device=device)
                                                                                                                                               
     # Save model                                                                                                                              
-    torch.save(model.state_dict(), '../models/poker_model_river.pth')
-    print("Model saved to poker_model_river.pth")
+    torch.save(model.state_dict(), args.model_save_path)
+    print(f"Model saved to {args.model_save_path}")
                                                                                                                                               
 if __name__ == "__main__":                                                                                                                    
     main()                                                                                                                                    

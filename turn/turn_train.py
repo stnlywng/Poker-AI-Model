@@ -5,6 +5,8 @@ from turn_poker_model import PokerNet
 from shared.process_features import process_features
 import pandas as pd
 import glob
+import argparse
+import os
 
 def pad_sequence(sequence, max_len=30):
     """Pad sequence to max_len with zeros"""
@@ -223,67 +225,83 @@ def train_model(model, train_loader, val_loader=None, epochs=20, lr=0.0005, devi
         model.load_state_dict(best_model_state)
         print(f'Restored best model with validation accuracy: {best_val_accuracy:.2f}%')
 
-def main():                                                                                                                                    
-    # Load all parquet files from directory                                                                                                   
-    parquet_files = glob.glob("../data/turn/*.parquet")                                                                                       
-    print(f"Found {len(parquet_files)} parquet files")                                                                                        
-                                                                                                                                              
-    # Load and combine all dataframes                                                                                                         
-    dfs = []                                                                                                                                  
-    for file in parquet_files:                                                                                                                
-        print(f"Loading {file}...")                                                                                                           
-        df = pd.read_parquet(file)                                                                                                            
-        dfs.append(df)                                                                                                                        
-                                                                                                                                              
-    # Combine all dataframes                                                                                                                  
-    combined_df = pd.concat(dfs, ignore_index=True)                                                                                           
-    print(f"Total number of samples: {len(combined_df)}")                                                                                     
-                                                                                                                                              
-    # Convert to list of records                                                                                                              
-    data_list = combined_df.to_dict(orient="records")                                                                                         
-                                                                                                                                              
-    # Create dataset                                                                                                                          
-    dataset = PokerDataset(data_list)                                                                                                         
-                                                                                                                                              
-    # Split into train/val                                                                                                                    
-    train_size = int(0.91 * len(dataset))                                                                                                     
-    val_size = len(dataset) - train_size                                                                                                      
-    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])                                               
-                                                                                                                                              
-    print(f"Training samples: {train_size}")                                                                                                  
-    print(f"Validation samples: {val_size}")                                                                                                  
-                                                                                                                                              
-    # Create dataloaders with custom collate function                                                                                         
-    train_loader = DataLoader(                                                                                                                
-        train_dataset,                                                                                                                        
-        batch_size=32,                                                                                                                        
-        shuffle=True,                                                                                                                         
-        collate_fn=collate_poker_batch                                                                                                        
-    )                                                                                                                                         
-    val_loader = DataLoader(                                                                                                                  
-        val_dataset,                                                                                                                          
-        batch_size=32,                                                                                                                        
-        shuffle=False,                                                                                                                        
-        collate_fn=collate_poker_batch                                                                                                        
-    )                                                                                                                                         
-                                                                                                                                              
-    # Initialize model with correct dimensions                                                                                                
-    model = PokerNet(                                                                                                                         
-        static_dim=27,  # From process_features                                                                                               
-        action_dim=4,   # [action_type, player, amount, round]                                                                                
-        hidden_dim=256,  # Increased from 128                                                                                                 
-        gru_hidden_dim=128  # Increased from 64                                                                                               
-    )                                                                                                                                         
-                                                                                                                                              
-    # Train                                                                                                                                   
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')                                                                     
-    print(f"Using device: {device}")                                                                                                          
-                                                                                                                                              
-    train_model(model, train_loader, val_loader, epochs=1, device=device)
-                                                                                                                                              
-    # Save model                                                                                                                              
-    torch.save(model.state_dict(), '../models/poker_model_turn.pth')                                                                          
-    print("Model saved to poker_model_turn.pth")                                                                                              
-                                                                                                                                              
-if __name__ == "__main__":                                                                                                                    
-    main()                                                                                                                                    
+def main():
+    # Add argument parser
+    parser = argparse.ArgumentParser(description='Train the turn poker model')
+    parser.add_argument('--data_path', type=str, required=True,
+                      help='Path to the directory containing training data')
+    parser.add_argument('--epochs', type=int, default=20,
+                      help='Number of training epochs')
+    parser.add_argument('--model_save_path', type=str, required=True,
+                      help='Path where to save the trained model')
+    parser.add_argument('--batch_size', type=int, default=32,
+                      help='Batch size for training')
+
+    args = parser.parse_args()
+
+    # Load all parquet files from directory
+    data_files = glob.glob(os.path.join(args.data_path, '*.parquet'))
+    if not data_files:
+        raise ValueError(f"No parquet files found in {args.data_path}")
+    else:
+        print(f"Found {len(data_files)} parquet files")
+
+    # Load and combine all dataframes
+    dfs = []
+    for file in data_files:
+        print(f"Loading {file}...")
+        df = pd.read_parquet(file)
+        dfs.append(df)
+
+    # Combine all dataframes
+    combined_df = pd.concat(dfs, ignore_index=True)
+    print(f"Total number of samples: {len(combined_df)}")
+
+    # Convert to list of records
+    data_list = combined_df.to_dict(orient="records")
+
+    # Create dataset
+    dataset = PokerDataset(data_list)
+
+    # Split into train/val
+    train_size = int(0.91 * len(dataset))
+    val_size = len(dataset) - train_size
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
+
+    print(f"Training samples: {train_size}")
+    print(f"Validation samples: {val_size}")
+
+    # Create dataloaders with custom collate function
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        collate_fn=collate_poker_batch
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        collate_fn=collate_poker_batch
+    )
+
+    # Initialize model with correct dimensions
+    model = PokerNet(
+        static_dim=27,  # From process_features
+        action_dim=4,   # [action_type, player, amount, round]
+        hidden_dim=256,  # Increased from 128
+        gru_hidden_dim=128  # Increased from 64
+    )
+
+    # Train
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Using device: {device}")
+
+    train_model(model, train_loader, val_loader, epochs=args.epochs, device=device)
+
+    # Save model
+    torch.save(model.state_dict(), args.model_save_path)
+    print(f"Model saved to {args.model_save_path}")
+
+if __name__ == "__main__":
+    main()

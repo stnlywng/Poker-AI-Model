@@ -5,6 +5,8 @@ import pandas as pd
 from flop_poker_model import PokerNet
 from shared.process_features import process_features
 import glob
+import argparse
+import os
 
 def pad_sequence(sequence, max_len=30):
     """Pad sequence to max_len with zeros"""
@@ -224,13 +226,29 @@ def train_model(model, train_loader, val_loader=None, epochs=20, lr=0.0005, devi
         print(f'Restored best model with validation accuracy: {best_val_accuracy:.2f}%')
 
 def main():
+    # Add argument parser
+    parser = argparse.ArgumentParser(description='Train the flop poker model')
+    parser.add_argument('--data_path', type=str, required=True,
+                      help='Path to the directory containing training data')
+    parser.add_argument('--epochs', type=int, default=20,
+                      help='Number of training epochs')
+    parser.add_argument('--model_save_path', type=str, required=True,
+                      help='Path where to save the trained model')
+    parser.add_argument('--batch_size', type=int, default=32,
+                      help='Batch size for training')
+
+    args = parser.parse_args()
+
     # Load all parquet files from directory
-    parquet_files = glob.glob("../data/flop/*.parquet")
-    print(f"Found {len(parquet_files)} parquet files")
-    
+    data_files = glob.glob(os.path.join(args.data_path, '*.parquet'))
+    if not data_files:
+        raise ValueError(f"No parquet files found in {args.data_path}")
+    else:
+        print(f"Found {len(data_files)} parquet files")
+
     # Load and combine all dataframes
     dfs = []
-    for file in parquet_files:
+    for file in data_files:
         print(f"Loading {file}...")
         df = pd.read_parquet(file)
         dfs.append(df)
@@ -256,13 +274,13 @@ def main():
     # Create dataloaders with custom collate function
     train_loader = DataLoader(
         train_dataset, 
-        batch_size=32, 
+        batch_size=args.batch_size, 
         shuffle=True,
         collate_fn=collate_poker_batch
     )
     val_loader = DataLoader(
         val_dataset, 
-        batch_size=32, 
+        batch_size=args.batch_size, 
         shuffle=False,
         collate_fn=collate_poker_batch
     )
@@ -279,11 +297,11 @@ def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
-    train_model(model, train_loader, val_loader, epochs=60, device=device)
+    train_model(model, train_loader, val_loader, epochs=args.epochs, device=device)
     
     # Save model
-    torch.save(model.state_dict(), '../models/poker_model_flop.pth')
-    print("Model saved to poker_model_flop.pth")
+    torch.save(model.state_dict(), args.model_save_path)
+    print(f"Model saved to {args.model_save_path}")
 
 if __name__ == "__main__":
     main() 
