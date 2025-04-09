@@ -20,7 +20,7 @@ Given a No-Limit Holdem Spot, the Poker No-Limit Holdem Model will tell you what
 - `<model_save_path>` — Required location of where to store your model, make sure location exists beforehand (e.g., ./models) 
 - `<batch_size>` — Optional (default is 32) 
   ```
-5. Run test_models where you give a spot in json format (input), and get a resulting output.
+5. Run test_models.py where you give a spot in json format (input), and get a resulting output.
 
 ## Sample.
 
