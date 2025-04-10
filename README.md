@@ -103,7 +103,6 @@ I've trained data with poker professional/friend [KevinIsLaPoker](https://www.yo
 ```
 **Output:**
 ```text
-
 === Model Prediction ===
 Recommended Action: raise
 Recommended Raise Size: 8.50 BB
