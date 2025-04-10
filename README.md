@@ -1,6 +1,6 @@
 # Poker (No-Limit Holdem) AI Model
 
-Given a No-Limit Holdem Spot, the Poker No-Limit Holdem Model will tell you what they think should be done based on their training (from Poker Hand History).
+Given a No-Limit Hold'em scenario, the Poker No-Limit Hold'em Model provides action and sizing recommendations based on its training from poker hand history data.
 
 ## Usage and Setup
 1. Download your No-Limit Holdem' hand histories from PokerCraft.
